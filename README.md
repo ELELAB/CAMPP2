@@ -2,7 +2,11 @@ Cancer Systems Biology, Section of Bioinformatics, Department of Health and Tech
 
 Cancer Structural Biology Group, Danish Cancer Society Research Center, Strandboulevarden 49, 2100, Copenhagen, Denmark
 
-# CAncer-bioMarker-Prediction-Pipeline - CAMPP2  #
+**IMPORTANT NOTE**: We have recreated this repository because of issues while preparing it
+for the submission to BioConductor. The original CAMPP2 repository, including
+commits, PRs and contribution, is available [here](https://www.github.com/ELELAB/CAMPP2_former_repository)
+
+# CAncer-bioMarker-Prediction-Pipeline - CAMPP2
 <br/>
 
 ### Installation instructions
