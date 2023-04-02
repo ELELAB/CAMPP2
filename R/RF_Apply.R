@@ -29,7 +29,6 @@
 #' all additional forests in the feature selection process. Default is 2000.
 #' @export
 #' @import varSelRF
-#' @import randomForest
 #' @import caret
 #' @return a list of seven elements: 1) a list where each element is a character string
 #' containing selected variables from the random forest feature selection process from
