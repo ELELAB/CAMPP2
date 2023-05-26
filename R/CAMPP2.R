@@ -67,6 +67,38 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
     dir.create(prefix)
     setwd(paste0(prefix, "/"))
 
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    #                                                                         ## CREATE SUMMARIZED EXPERIMENT OBJECT ###
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    print("CREATING SUMMARIZED EXPERIMENT")
+
+    print("Creating SE from 1st dataset.")
+    rownames(campp2_brca_1_meta)<-campp2_brca_1_meta$ID
+    campp2_brca_se_1 <- CreateSE(campp2_brca_1, campp2_brca_1_meta)
+    print("Creating SE from 1st dataset has finished.")
+
+    if (!is.null(data2)){
+        print("Creating SE from 2nd dataset.")
+
+        rownames(campp2_brca_2_meta)<-campp2_brca_2_meta$ID
+        campp2_brca_se_2 <- CreateSE(campp2_brca_2, campp2_brca_2_meta)
+
+        print("Creating SE from 2nd dataset has finished.")
+
+    }
+
+    ###saving the results
+    dir.create("SummarizedExperiment")
+    setwd("SummarizedExperiment/")
+    save(campp2_brca_se_1,file="campp2_brca_se_1.rda")
+    if(!is.null(campp2_brca_se_2)){
+        save(campp2_brca_se_2,file="campp2_brca_se_2.rda")
+    }
+    setwd("../")
+
+    print("CREATING SUMMARIZED EXPERIMENT FINISHED.")
+
 
     # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     #                                                                         ## MISSING VALUE IMPUTATIONS ###

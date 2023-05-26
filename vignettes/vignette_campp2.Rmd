@@ -364,6 +364,32 @@ runCampp2(batches=c("tumor_stage","tumor_stage"),prefix="test_CAMPP2_distr",
 ```
 
 
+### CreateSE
+This function creates a SummarizedExperiment object from given feature counts and sample metadata.
+It is crucial to ensure that the row names and column names match between the feature counts and sample metadata.
+If they do not match, the function will stop and throw an error.
+
+**Parameters:**
+
+*feature_counts*: a data frame with feature counts. Each column represents a sample,
+and each row represents a feature (eg. gene) Column names must match the row names in sample metadata.
+*sample_metadata*: a data frame with sample metadata. Each row represents a sample,
+and each column represents a metadata category. Row names must match the column names in feature counts
+
+**Output from the function:**
+
+A SummarizedExperiment object containing the given feature_counts and sample_metadata.
+
+**An example run:**
+
+```{r, eval = TRUE, echo = TRUE, results='hide'}
+rownames(campp2_brca_1_meta)<-campp2_brca_1_meta$ID
+campp2_brca_se_1 <- CreateSE(campp2_brca_1, campp2_brca_1_meta)
+```
+
+
+
+
 ### ReplaceNAs
 
 This function removes samples and features with a high percentage of NA values. The rest of NA values is replaced by imputed values.
