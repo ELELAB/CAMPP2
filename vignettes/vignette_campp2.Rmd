@@ -364,7 +364,7 @@ runCampp2(batches=c("tumor_stage","tumor_stage"),prefix="test_CAMPP2_distr",
 ```
 
 
-### create_SE
+### CreateSE
 This function creates a SummarizedExperiment object from given feature counts and sample metadata.
 It is crucial to ensure that the row names and column names match between the feature counts and sample metadata.
 If they do not match, the function will stop and throw an error.
@@ -384,7 +384,7 @@ A SummarizedExperiment object containing the given feature_counts and sample_met
 
 ```{r, eval = TRUE, echo = TRUE, results='hide'}
 rownames(campp2_brca_1_meta)<-campp2_brca_1_meta$ID
-campp2_brca_se_1 <- create_SE(campp2_brca_1, campp2_brca_1_meta)
+campp2_brca_se_1 <- CreateSE(campp2_brca_1, campp2_brca_1_meta)
 ```
 
 
