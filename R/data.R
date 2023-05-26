@@ -52,6 +52,36 @@
 "campp2_brca_2_meta"
 
 
+#' campp2_brca_se_1 - example data
+#'
+#' @description A campp2_brca_se_1 is a SummarizedExperiment created based on
+#' campp2_brca_1 and campp2_brca_1_meta by running:
+#' rownames(campp2_brca_1_meta)<-campp2_brca_1_meta$ID
+#' campp2_brca_se_1 <- create_SE(campp2_brca_1, campp2_brca_1_meta)
+#' @docType data
+#' @usage data(campp2_brca_se_1)
+#' @aliases campp2_brca_se_1
+#' @return A SummarizedExperiment with 10000 rows (genes) and 8 columns (samples)
+#' @format A SummarizedExperiment with 10000 rows (genes) and 8 columns (samples)
+#'
+"campp2_brca_se_1"
+
+
+#' campp2_brca_se_2 - example data
+#'
+#' @description A campp2_brca_se_2 is a SummarizedExperiment created based on
+#' campp2_brca_2 and campp2_brca_2_meta by running:
+#' rownames(campp2_brca_2_meta)<-campp2_brca_2_meta$ID
+#' campp2_brca_se_2 <- create_SE(campp2_brca_2, campp2_brca_2_meta)
+#' @docType data
+#' @usage data(campp2_brca_se_2)
+#' @aliases campp2_brca_se_2
+#' @return A SummarizedExperiment with 10000 rows (genes) and 8 columns (samples)
+#' @format A SummarizedExperiment with 10000 rows (genes) and 8 columns (samples)
+#'
+"campp2_brca_se_2"
+
+
 #' campp2_brca_1_NAs - example data
 #'
 #' @description A dataset with randomly introduced 1000 NA values into every sample's genes

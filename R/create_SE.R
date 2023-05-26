@@ -10,8 +10,8 @@
 #' @return A SummarizedExperiment object containing the given feature_counts and sample_metadata.
 #' @examples
 #' \dontrun{
-#'   rownames(campp2_brca_1_meta<-campp2_brca_1_meta$ID)
-#'   se1 <- create_summarized_experiment(campp2_brca_1, campp2_brca_1_meta)
+#'   rownames(campp2_brca_1_meta)<-campp2_brca_1_meta$ID
+#'   campp2_brca_se_1 <- create_SE(campp2_brca_1, campp2_brca_1_meta)
 #' }
 #' @export
 #' @importFrom SummarizedExperiment SummarizedExperiment

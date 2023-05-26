@@ -23,8 +23,8 @@ If they do not match, the function will stop and throw an error.
 }
 \examples{
 \dontrun{
-  rownames(campp2_brca_1_meta<-campp2_brca_1_meta$ID)
-  se1 <- create_summarized_experiment(campp2_brca_1, campp2_brca_1_meta)
+  rownames(campp2_brca_1_meta)<-campp2_brca_1_meta$ID
+  campp2_brca_se_1 <- create_SE(campp2_brca_1, campp2_brca_1_meta)
 }
 }
 \author{
