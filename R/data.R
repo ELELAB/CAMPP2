@@ -57,7 +57,7 @@
 #' @description A campp2_brca_se_1 is a SummarizedExperiment created based on
 #' campp2_brca_1 and campp2_brca_1_meta by running:
 #' rownames(campp2_brca_1_meta)<-campp2_brca_1_meta$ID
-#' campp2_brca_se_1 <- create_SE(campp2_brca_1, campp2_brca_1_meta)
+#' campp2_brca_se_1 <- CreateSE(campp2_brca_1, campp2_brca_1_meta)
 #' @docType data
 #' @usage data(campp2_brca_se_1)
 #' @aliases campp2_brca_se_1
@@ -72,7 +72,7 @@
 #' @description A campp2_brca_se_2 is a SummarizedExperiment created based on
 #' campp2_brca_2 and campp2_brca_2_meta by running:
 #' rownames(campp2_brca_2_meta)<-campp2_brca_2_meta$ID
-#' campp2_brca_se_2 <- create_SE(campp2_brca_2, campp2_brca_2_meta)
+#' campp2_brca_se_2 <- CreateSE(campp2_brca_2, campp2_brca_2_meta)
 #' @docType data
 #' @usage data(campp2_brca_se_2)
 #' @aliases campp2_brca_se_2

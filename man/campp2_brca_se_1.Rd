@@ -17,6 +17,6 @@ A SummarizedExperiment with 10000 rows (genes) and 8 columns (samples)
 A campp2_brca_se_1 is a SummarizedExperiment created based on
 campp2_brca_1 and campp2_brca_1_meta by running:
 rownames(campp2_brca_1_meta)<-campp2_brca_1_meta$ID
-campp2_brca_se_1 <- create_SE(campp2_brca_1, campp2_brca_1_meta)
+campp2_brca_se_1 <- CreateSE(campp2_brca_1, campp2_brca_1_meta)
 }
 \keyword{datasets}

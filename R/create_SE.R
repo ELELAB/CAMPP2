@@ -9,22 +9,21 @@
 #' and each column represents a metadata category. Row names must match the column names in feature counts
 #' @return A SummarizedExperiment object containing the given feature_counts and sample_metadata.
 #' @examples
-#' \dontrun{
-#'   rownames(campp2_brca_1_meta)<-campp2_brca_1_meta$ID
-#'   campp2_brca_se_1 <- create_SE(campp2_brca_1, campp2_brca_1_meta)
-#' }
+#' rownames(campp2_brca_1_meta) <- campp2_brca_1_meta$ID
+#' campp2_brca_se_1 <- CreateSE(campp2_brca_1, campp2_brca_1_meta)
 #' @export
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #'
-create_SE <- function(feature_counts, sample_metadata) {
+CreateSE <- function(feature_counts, sample_metadata) {
+
     # Check if input data frames have the same number of samples
     if (ncol(feature_counts) != nrow(sample_metadata)) {
         stop("The number of columns in feature_counts must match the number of rows in sample_metadata.")
     }
 
     # Check if row names in sample_metadata match column names in feature_counts
-    if (!all(rownames(sample_metadata) %in% colnames(feature_counts))) {
-        stop("All row names in sample_metadata must be present in the column names of feature_counts.")
+    if (!identical(sort(rownames(sample_metadata)), sort(colnames(feature_counts)))) {
+        stop("Row names in sample_metadata must be identical to the column names of feature_counts.")
     }
 
     # Create the SummarizedExperiment object

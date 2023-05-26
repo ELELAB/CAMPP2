@@ -75,14 +75,14 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
 
     print("Creating SE from 1st dataset.")
     rownames(campp2_brca_1_meta)<-campp2_brca_1_meta$ID
-    campp2_brca_se_1 <- create_SE(campp2_brca_1, campp2_brca_1_meta)
+    campp2_brca_se_1 <- CreateSE(campp2_brca_1, campp2_brca_1_meta)
     print("Creating SE from 1st dataset has finished.")
 
     if (!is.null(data2)){
         print("Creating SE from 2nd dataset.")
 
         rownames(campp2_brca_2_meta)<-campp2_brca_2_meta$ID
-        campp2_brca_se_2 <- create_SE(campp2_brca_2, campp2_brca_2_meta)
+        campp2_brca_se_2 <- CreateSE(campp2_brca_2, campp2_brca_2_meta)
 
         print("Creating SE from 2nd dataset has finished.")
 
