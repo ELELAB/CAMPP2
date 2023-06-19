@@ -9,7 +9,7 @@
 #' or resulted in negative values, an additional missing value imputation using
 #' impute.knn will be performed (rows with more than 50 percent of missing
 #' values will be imputed using the overall mean per sample).
-#' @param data a dataframe of gene/abundance counts.
+#' @param SE a SummarizedExperiment object
 #' @param pct.NA.row a number defining maximal percentage of NA values present
 #' in a feature (e.g. a percentage of samples having "NA" in a given gene).
 #' Features (rows) with a higher percentage of NA values will be removed (70 by
@@ -24,7 +24,14 @@
 #' @import SummarizedExperiment
 #' @return Data frame with replaced "NA" values
 #' @examples {
-#' ReplaceNAs(data=campp2_brca_1_NAs, pct.NA.row=70, pct.NA.column=80)
+#' #get a number of genes in the dataset.
+#' n<-nrow(assay(campp2_brca_se_1))
+#'
+#' # For testing of this function, 1000 genes is assegned with NA value. NA values are introduced randomly into each sample and all the 10000 genes (n=10000) are considered for the introduction of NA values.
+#' assay(campp2_brca_se_1, withDimnames=FALSE)<-apply (assay(campp2_brca_se_1), 2, function(x) {x[sample( c(1:n), floor(n/10))] <- NA; x} )
+#'
+#' # create an object with replaced NAs; features having "NA" in more than 70% of the samples will be removed; samples having "NA" in more than 80% of the genes will be removed
+#' campp2_brca_1_replacedNAs<-ReplaceNAs(SE=campp2_brca_se_1, pct.NA.row=70, pct.NA.column=80)
 #' }
 
 ReplaceNAs <- function(SE,pct.NA.row=70,pct.NA.column=80) {
