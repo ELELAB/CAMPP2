@@ -27,7 +27,7 @@
 #' #get a number of genes in the dataset.
 #' n<-nrow(assay(campp2_brca_se_1))
 #'
-#' # For testing of this function, 1000 genes is assegned with NA value. NA values are introduced randomly into each sample and all the 10000 genes (n=10000) are considered for the introduction of NA values.
+#' # For testing of this function, 1000 genes is assigned with NA value. NA values are introduced randomly into each sample and all the 10000 genes (n=10000) are considered for the introduction of NA values.
 #' assay(campp2_brca_se_1, withDimnames=FALSE)<-apply (assay(campp2_brca_se_1), 2, function(x) {x[sample( c(1:n), floor(n/10))] <- NA; x} )
 #'
 #' # create an object with replaced NAs; features having "NA" in more than 70% of the samples will be removed; samples having "NA" in more than 80% of the genes will be removed
@@ -41,7 +41,7 @@ ReplaceNAs <- function(SE,pct.NA.row=70,pct.NA.column=80) {
     removeNA=NULL
     removeNA <- which(as.vector(na_row) > pct.NA.row)
     if(length(removeNA)>0){
-        cat(paste0(length(removeNA),"lines will be removed because of a high percentage of NAs"))
+        cat(paste0(length(removeNA),"row(s) will be removed because of a high percentage of NAs"))
         SE_subset_rows<-SE[-removeNA,]
     } else {
         print("All rows fill requirement on percentage of NAs")
@@ -49,20 +49,16 @@ ReplaceNAs <- function(SE,pct.NA.row=70,pct.NA.column=80) {
     }
 
     na_col <- apply(assay(SE_subset_rows), 2, function(x) (sum(is.na(x))/nrow(assay(SE_subset_rows)))*100)
-    cat(paste0(" The input data after row removal has between " , round(min(na_col), digits = 2), "% - ", round(max(na_col), digits = 2),"%", " missing (NA) values per column. Samples (columns) with more than ", pct.NA.column,"% missing values will be removed. \n N.B. Uncertainty increases with number of missing values! \n "))
-    removeNA=NULL
+    cat(paste0(" The input data after row removal has between " , round(min(na_col), digits = 2), "% - ", round(max(na_col), digits = 2),"%", " missing (NA) values per column. Samples (columns) with more than ", pct.NA.column,"% missing values will be removed. \n N.B."))
     removeNA <- which(as.vector(na_col) > pct.NA.column)
     if(length(removeNA)>0){
         cat(paste0(length(removeNA)," columns will be removed because of a high percentage of NAs"))
         SE_subset_rows_columns<-SE_subset_rows[,-removeNA]
 
     } else {
-        print("All columns fill requirement of maximum percentage of NAs in the rows and columns.")
+        print("All columns fill requirement of maximum percentage of NAs.")
         SE_subset_rows_columns<-SE_subset_rows
     }
-
-
-
 
     still.NA <- c(unique(as.vector(is.na(assay(SE_subset_rows_columns)))))
     if (TRUE %in% still.NA) {
