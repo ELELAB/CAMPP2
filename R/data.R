@@ -82,31 +82,31 @@
 "campp2_brca_se_2"
 
 
-#' campp2_brca_1_NAs - example data
+#' campp2_brca_se_1_NAs - example data
 #'
 #' @description A dataset with randomly introduced 1000 NA values into every sample's genes
-#' (10000). This dataset is based on "campp2_brca_1". For more details, see the
+#' (10000). This dataset is based on "campp2_brca_se_1". For more details, see the
 #' vignette.
 #' @docType data
-#' @usage data(campp2_brca_1_NAs)
-#' @aliases campp2_brca_1_NAs
+#' @usage data(campp2_brca_se_1_NAs)
+#' @aliases campp2_brca_se_1_NAs
 #' @return A matrix with 10000 rows (genes) and 8 columns (samples).
 #' @format A matrix with 10000 rows (genes) and 8 columns (samples).
 #'
-"campp2_brca_1_NAs"
+"campp2_brca_se_1_NAs"
 
 
-#' campp2_brca_1_replacedNAs - example data
+#' campp2_brca_se_1_replacedNAs - example data
 #'
 #' @description A dataset with replaced NA values. This dataset is based on
-#' "campp2_brca_1_NAs" dataset. For more details, see the vignette.
+#' "campp2_brca_se_1_NAs" dataset. For more details, see the vignette.
 #' @docType data
-#' @usage data(campp2_brca_1_replacedNAs)
+#' @usage data(campp2_brca_se_1_replacedNAs)
 #' @aliases campp2_brca_1_replacedNAs
-#' @return A data frame with 10000 rows (genes) and 8 columns (samples).
-#' @format A data frame with 10000 rows (genes) and 8 columns (samples).
+#' @return A SummarizedExperiment object with 9993 genes and 8 samples.
+#' @format A SummarizedExperiment object with 9993 genes and 8 samples.
 #'
-"campp2_brca_1_replacedNAs"
+"campp2_brca_se_1_replacedNAs"
 
 
 #' campp2_brca_1_zeroFix - example data

@@ -31,14 +31,13 @@
 #' assay(campp2_brca_se_1, withDimnames=FALSE)<-apply (assay(campp2_brca_se_1), 2, function(x) {x[sample( c(1:n), floor(n/10))] <- NA; x} )
 #'
 #' # create an object with replaced NAs; features having "NA" in more than 70% of the samples will be removed; samples having "NA" in more than 80% of the genes will be removed
-#' campp2_brca_1_replacedNAs<-ReplaceNAs(SE=campp2_brca_se_1, pct.NA.row=70, pct.NA.column=80)
+#' campp2_brca_se_1_replacedNAs<-ReplaceNAs(SE=campp2_brca_se_1, pct.NA.row=70, pct.NA.column=80)
 #' }
 
 ReplaceNAs <- function(SE,pct.NA.row=70,pct.NA.column=80) {
 
     na_row <- apply(assay(SE), 1, function(x) (sum(is.na(x))/ncol(assay(SE)))*100)
     cat(paste0(" The input data has between " , round(min(na_row), digits = 2), "% - ", round(max(na_row), digits = 2),"%", " missing (NA) values per row. Features (rows) with more than ",pct.NA.row,"% missing values will be removed. \n"))
-    removeNA=NULL
     removeNA <- which(as.vector(na_row) > pct.NA.row)
     if(length(removeNA)>0){
         cat(paste0(length(removeNA),"row(s) will be removed because of a high percentage of NAs"))
@@ -102,11 +101,13 @@ ReplaceNAs <- function(SE,pct.NA.row=70,pct.NA.column=80) {
             assay(SE_subset_rows_columns_rows, withDimnames=FALSE) <- data.lls
         }
 
-        final_output<-SE_subset_rows_columns_rows
+        return(SE_subset_rows_columns_rows)
     }
 
-    final_output<-SE_subset_rows_columns
+    else {
+        return(SE_subset_rows_columns)
+    }
 
-    return(final_output)}
+}
 
 

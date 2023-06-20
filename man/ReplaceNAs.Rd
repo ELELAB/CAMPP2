@@ -39,10 +39,10 @@ values will be imputed using the overall mean per sample).
 #get a number of genes in the dataset.
 n<-nrow(assay(campp2_brca_se_1))
 
-# For testing of this function, 1000 genes is assegned with NA value. NA values are introduced randomly into each sample and all the 10000 genes (n=10000) are considered for the introduction of NA values.
+# For testing of this function, 1000 genes is assigned with NA value. NA values are introduced randomly into each sample and all the 10000 genes (n=10000) are considered for the introduction of NA values.
 assay(campp2_brca_se_1, withDimnames=FALSE)<-apply (assay(campp2_brca_se_1), 2, function(x) {x[sample( c(1:n), floor(n/10))] <- NA; x} )
 
 # create an object with replaced NAs; features having "NA" in more than 70\% of the samples will be removed; samples having "NA" in more than 80\% of the genes will be removed
-campp2_brca_1_replacedNAs<-ReplaceNAs(SE=campp2_brca_se_1, pct.NA.row=70, pct.NA.column=80)
+campp2_brca_se_1_replacedNAs<-ReplaceNAs(SE=campp2_brca_se_1, pct.NA.row=70, pct.NA.column=80)
 }
 }
