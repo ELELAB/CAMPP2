@@ -1,67 +1,62 @@
 #' @title Fix zeros
-#' @description This function detects zero/negative values and replaces zero
-#' values in the data. In the first step, the function checks for the presence
-#' of zero and negative values in the data. In the second step, (activated by
-#' default), features having sum of zero counts higher than the size of the
-#' smallest sample group will be removed (e.g. genes represented by zero
-#' counts/transcripts in more than n samples will be removed; n = size of the
-#' smallest group). Next, remaining zeros are substituted with minimal values
-#' (>0) observed in each feature across all samples.
-#' @param data a dataframe of gene/abundance counts.
-#' @param group group a factor specifying samples' group (e.g. could be
-#' represented by a column from a metadata file).
+#' @description This function detects zero/negative values and replaces them
+#' in a SummarizedExperiment object. In the first step, it checks for the presence
+#' of zero and negative values. Next, features with zero counts surpassing the
+#' threshold set by the size of smallest sample group are removed. Subsequently,
+#' the remaining zeros are substituted with the minimal positive values observed
+#' for each feature across all samples.
+#' @param SE a SummarizedExperiment object of gene/abundance counts.
+#' @param group_colname a string specifying the column name in the colData(SE)
+#' representing the sample group.
 #' @param remove.sparse.features a logical argument (TRUE/FALSE) for removal of
-#' features with sum of zero counts larger than the size of the smallest
-#' sample group, and for replacing the remaining zeros. Default is TRUE.
+#' features with a sum of zero counts exceeding the size of the smallest
+#' sample group and for replacing the remaining zeros. Default is TRUE.
 #' @export
-#' @import impute
 #' @import SummarizedExperiment
-#' @return a data frame with fixed zeros. Features having sum of zero counts
-#' higher than the size of the smallest sample group are removed and
-#' remaining zeros will be replaced by default.
+#' @return a SummarizedExperiment object with adjusted zeros. Features with a sum of zero counts
+#' exceeding the smallest sample group size are removed and the remaining zeros are replaced.
 #' @examples {
-#' ###In this example, data with fixed NA values are used as an input.
-#' FixZeros(data=campp2_brca_1_replacedNAs,group=campp2_brca_1_meta$diagnosis, remove.sparse.features=TRUE)
+#' # Assuming you have a SummarizedExperiment object and relevant metadata column
+#' SE_fixed = FixZeros(SE = some_SE_object, group_colname = "diagnosis")
 #' }
 
 
-FixZeros <- function(SE, group, remove.sparse.features=TRUE) {
+FixZeros <- function(SE, group_colname, remove.sparse.features=TRUE) {
 
-    if(any(assay(SE)==0)){
-        print("data includes 0-value(s)")
-    }else{
-        print("data doesn't include 0-value(s)")
+    # Extracting the group data from SE
+    if(!group_colname %in% colnames(colData(SE))){
+        stop("The specified group column name is not found in the SE colData.")
+    }
+    group <- colData(SE)[[group_colname]]
+
+    if(any(assay(SE) == 0)){
+        message("Data includes 0-value(s)")
+    } else {
+        message("Data doesn't include 0-value(s)")
     }
 
     if(any(assay(SE) < 0)){
-        print("data includes negative value(s)")
-    }else{
-        print("data doesn't include negative value(s)")
+        message("Data includes negative value(s)")
+    } else {
+        message("Data doesn't include negative value(s)")
     }
 
     ###Removal of features with high 0-counts
-    if(remove.sparse.features==TRUE){
-        smallestGr <- min(as.numeric(table(group))) # a size of the smallest
-        #group of samples
-        greaterthanBG <- apply(assay(SE), 1, function(x) sum(x > 0)) #counting
-        #non-zero counts for each feature
-        lessthanBG  <- which(as.numeric(greaterthanBG) < smallestGr) #features
-        #having number of zero counts higher than the size of the smallest
-        #sample group.
+    if(remove.sparse.features) {
+        smallestGr <- min(table(group))
+        greaterthanBG <- rowSums(assay(SE) > 0)
+        lessthanBG <- which(greaterthanBG < smallestGr)
 
         if (length(lessthanBG) > 0) {
-            # data <- data[-lessthanBG,] #removal of lines with low counts
-            SE<-SE[-lessthanBG,]
-            print(paste0(length(lessthanBG)," features will be removed because of the low counts"))
+            SE <- SE[-lessthanBG,]
+            message(paste0(length(lessthanBG), " features removed due to excessive zeros"))
         }
     }
 
     ###Replacement of zeros by the lowest value for each feature
-    min_per_row <- as.vector(apply(assay(SE), 1, function(x) min(x[x != 0])))
-    for(i in 1:nrow(assay(SE))){
-        assay(SE)[i, assay(SE)[i,] == 0] <- min_per_row[i] #substitution of zeros with
-        #min values per row
-    }
+    min_per_row <- apply(assay(SE), 1, function(x) min(x[x != 0]))
+    zero_positions <- which(assay(SE) == 0, arr.ind=TRUE)
+    assay(SE)[zero_positions] <- min_per_row[zero_positions[, 1]]
 
     return(SE)
 }

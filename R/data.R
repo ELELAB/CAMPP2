@@ -109,6 +109,22 @@
 "campp2_brca_1_replacedNAs"
 
 
+################
+#' campp2_brca_se_1_zeroFix - example data
+#'
+#' @description A dataset with fixed zero values generated using "FixZeros" function. This
+#' dataset is based on "campp2_brca_se_1_replacedNAs" data. For more details, see the vignette.
+#' @docType data
+#' @usage data(campp2_brca_se_1_zeroFix)
+#' @aliases campp2_brca_se_1_zeroFix
+#' @return A summarized experiment with 9623 rows (genes) and 8 columns (samples).
+#' @format A summarized experiment with 9623 rows (genes) and 8 columns (samples).
+#'
+"campp2_brca_se_1_zeroFix"
+
+
+################
+
 #' campp2_brca_1_zeroFix - example data
 #'
 #' @description A dataset with fixed zero values generated using "FixZeros" function. This
