@@ -103,8 +103,8 @@
 #' @docType data
 #' @usage data(campp2_brca_se_1_replacedNAs)
 #' @aliases campp2_brca_1_replacedNAs
-#' @return A SummarizedExperiment object with 9993 genes and 8 samples.
-#' @format A SummarizedExperiment object with 9993 genes and 8 samples.
+#' @return A SummarizedExperiment object with 9989 genes and 8 samples.
+#' @format A SummarizedExperiment object with 9989 genes and 8 samples.
 #'
 "campp2_brca_se_1_replacedNAs"
 
