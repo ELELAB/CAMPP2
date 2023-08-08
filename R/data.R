@@ -117,8 +117,8 @@
 #' @docType data
 #' @usage data(campp2_brca_se_1_zeroFix)
 #' @aliases campp2_brca_se_1_zeroFix
-#' @return A summarized experiment with 9623 rows (genes) and 8 columns (samples).
-#' @format A summarized experiment with 9623 rows (genes) and 8 columns (samples).
+#' @return A summarized experiment with 9664 rows (genes) and 8 columns (samples).
+#' @format A summarized experiment with 9664 rows (genes) and 8 columns (samples).
 #'
 "campp2_brca_se_1_zeroFix"
 
