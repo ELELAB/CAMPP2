@@ -109,7 +109,6 @@
 "campp2_brca_1_replacedNAs"
 
 
-################
 #' campp2_brca_se_1_zeroFix - example data
 #'
 #' @description A dataset with fixed zero values generated using "FixZeros" function. This
@@ -122,8 +121,6 @@
 #'
 "campp2_brca_se_1_zeroFix"
 
-
-################
 
 #' campp2_brca_1_zeroFix - example data
 #'
