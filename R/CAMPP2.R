@@ -74,15 +74,15 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
     print("CREATING SUMMARIZED EXPERIMENT")
 
     print("Creating SE from 1st dataset.")
-    rownames(campp2_brca_1_meta)<-campp2_brca_1_meta$ID
-    campp2_brca_se_1 <- CreateSE(campp2_brca_1, campp2_brca_1_meta)
+    rownames(metadata1)<-metadata1$group1
+    SE_1 <- CreateSE(campp2_brca_1, metadata1)
     print("Creating SE from 1st dataset has finished.")
 
-    if (!is.null(data2)){
+    if (!is.null(SE_2)){
         print("Creating SE from 2nd dataset.")
 
-        rownames(campp2_brca_2_meta)<-campp2_brca_2_meta$ID
-        campp2_brca_se_2 <- CreateSE(campp2_brca_2, campp2_brca_2_meta)
+        rownames(metadata2)<-metadata2$group2
+        SE_2 <- CreateSE(campp2_brca_2, metadata2)
 
         print("Creating SE from 2nd dataset has finished.")
 
@@ -91,9 +91,9 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
     ###saving the results
     dir.create("SummarizedExperiment")
     setwd("SummarizedExperiment/")
-    save(campp2_brca_se_1,file="campp2_brca_se_1.rda")
-    if(!is.null(campp2_brca_se_2)){
-        save(campp2_brca_se_2,file="campp2_brca_se_2.rda")
+    save(SE_1,file="SE_1.rda")
+    if(!is.null(SE_2)){
+        save(SE_2,file="SE_2.rda")
     }
     setwd("../")
 
@@ -107,24 +107,24 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
     print("RUNNING MISSING VALUE IMPUTATIONS")
     print("Running missing values imputation on data1")
 
-    data1<-ReplaceNAs(data1)
+    SE_1<-ReplaceNAs(SE_1)
 
-    print("Missing values imputation on data1 has finished")
+    print("Missing values imputation on SE_1 has finished")
 
-    if (!is.null(data2)){
-        print("Running missing values imputation on data2")
+    if (!is.null(SE_2)){
+        print("Running missing values imputation on SE_2")
 
-        data2<-ReplaceNAs(data2)
+        SE_2<-ReplaceNAs(SE_2)
 
-        print("Missing values imputation on data2 has finished")
+        print("Missing values imputation on SE_2 has finished")
     }
 
     ###saving the results
     dir.create("ReplaceNAs")
     setwd("ReplaceNAs/")
-    save(data1,file="data1_ReplaceNAs.rda")
-    if(!is.null(data2)){
-        save(data2,file="data2_ReplaceNAs.rda")
+    save(SE_1,file="SE_1_ReplaceNAs.rda")
+    if(!is.null(SE_2)){
+        save(SE_2,file="SE_2_ReplaceNAs.rda")
     }
     setwd("../")
 
@@ -136,24 +136,24 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
 
     print("CAMPP2 automatically detects negative values and fix zeros in your data")
     print("RUNNING DETECTION OF NEGATIVE VALUES AND FIXING OF ZERO VALUES")
-    print("Detecting negative values and fixing zeros in data1")
+    print("Detecting negative values and fixing zeros in SE_1")
 
-    data1.original <- data1
-    data1 %<-% FixZeros(data1,group1)
+    SE_1.original <- SE_1
+    SE_1 %<-% FixZeros(SE_1,group1)
 
-    data2.original=NULL
-    if (!is.null(data2)){
-        data2.original <- data2
-        print("Detecting negative values and replacing zeros in data2")
-        data2 %<-% FixZeros(data2,group2)
+    SE_2.original=NULL
+    if (!is.null(SE_2)){
+        SE_2.original <- SE_2
+        print("Detecting negative values and replacing zeros in SE_2")
+        SE_2 %<-% FixZeros(SE_2,group2)
     }
 
     ###saving the results
     dir.create("FixZeros")
     setwd("FixZeros/")
-    save(data1,file="data1_FixZeros.rda")
-    if(!is.null(data2)){
-        save(data2,file="data2_FixZeros.rda")
+    save(SE_1,file="SE_1_FixZeros.rda")
+    if(!is.null(SE_2)){
+        save(SE_2,file="SE_2_FixZeros.rda")
     }
     setwd("../")
 
