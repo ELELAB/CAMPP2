@@ -429,30 +429,35 @@ campp2_brca_1_replacedNAs<-ReplaceNAs(data=campp2_brca_1_NAs, pct.NA.row=70, pct
 
 ### FixZeros 
 
-This function detects zero/negative values and replaces zero values in the data.
-In the first step, the function checks for the presence of zero and negative values in the data.
-In the second step, (activated by default), features having sum of zero counts higher than the size of the smallest sample group will be
-removed (e.g. genes represented by zero counts/transcripts in more than n samples will be removed; n = size of the smallest group). 
-Next, remaining zeros are substituted with minimal values (>0) observed in each feature across all samples in the dataset.
+This function detects zero/negative values and replaces them
+in a SummarizedExperiment object. In the first step, it checks for the presence
+of zero and negative values. Next, features with zero counts surpassing the
+threshold set by the size of smallest sample group are removed. Subsequently,
+the remaining zeros are substituted with the minimal positive values observed
+for each feature across all samples.
 
 **Parameters:**
 
-*data* a dataframe of gene/abundance counts.
+*data* SE a SummarizedExperiment object of gene/abundance counts.
 
-*group* group a factor specifying group for each sample (e.g. could be represented by a column from a metadata file).
-
-*remove.sparse.features* a logical argument (TRUE/FALSE) for removal of features with sum of zero counts larger than the size of the smallest sample group, and for replacing the remaining zeros. Default is TRUE.
+*group_colname* a string specifying the column name in the colData(SE)
+representing the sample group.
+*remove.sparse.features* a logical argument (TRUE/FALSE) for removal of
+features with a sum of zero counts exceeding the size of the smallest
+sample group and for replacing the remaining zeros. Default is TRUE.
 
 **Output from the function:**
 
-a data frame with fixed zeros. Features having sum of zero counts higher than the size of the smallest sample group are removed and remaining zeros are replaced by default.
+a SummarizedExperiment object with adjusted zeros. Features with a sum of zero counts
+exceeding the smallest sample group size are removed and the remaining zeros are replaced.
 
 **An example run:**
 
 ```{r, eval = TRUE, echo = TRUE, results='hide'}
-# Create an object with fixed zeros. A dataset without NA values ("campp2_brca_1_replacedNAs" generated in a previous step) is used as an input.
-campp2_brca_1_zeroFix<-FixZeros(data=campp2_brca_1_replacedNAs,group=campp2_brca_1_meta$diagnosis, remove.sparse.features=TRUE)
+# Create an object with fixed zeros. A dataset without NA values ("campp2_brca_se_1_replacedNAs" generated in a previous step) is used as an input.
+campp2_brca_se_1_zeroFix<-FixZeros(campp2_brca_se_1_replacedNAs, group_colname="subtype", remove.sparse.features=TRUE)
 ```
+
 
 ### NormalizeData 
 

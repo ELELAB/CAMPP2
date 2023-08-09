@@ -4,36 +4,33 @@
 \alias{FixZeros}
 \title{Fix zeros}
 \usage{
-FixZeros(data, group, remove.sparse.features = TRUE)
+FixZeros(SE, group_colname, remove.sparse.features = TRUE)
 }
 \arguments{
-\item{data}{a dataframe of gene/abundance counts.}
+\item{SE}{a SummarizedExperiment object of gene/abundance counts.}
 
-\item{group}{group a factor specifying samples' group (e.g. could be
-represented by a column from a metadata file).}
+\item{group_colname}{a string specifying the column name in the colData(SE)
+representing the sample group.}
 
 \item{remove.sparse.features}{a logical argument (TRUE/FALSE) for removal of
-features with sum of zero counts larger than the size of the smallest
-sample group, and for replacing the remaining zeros.  Default is TRUE.}
+features with a sum of zero counts exceeding the size of the smallest
+sample group and for replacing the remaining zeros. Default is TRUE.}
 }
 \value{
-a data frame with fixed zeros. Features having sum of zero counts
-higher than the size of the smallest sample group are removed and
-remaining zeros will be replaced by default.
+a SummarizedExperiment object with adjusted zeros. Features with a sum of zero counts
+exceeding the smallest sample group size are removed and the remaining zeros are replaced.
 }
 \description{
-This function detects zero/negative values and replaces zero
-values in the data. In the first step, the function checks for the presence
-of zero and negative values in the data. In the second step, (activated by
-default), features having sum of zero counts higher than the size of the
-smallest sample group will be removed (e.g. genes represented by zero
-counts/transcripts in more than n samples will be removed; n = size of the
-smallest group). Next, remaining zeros are substituted with minimal values
-(>0) observed in each feature across all samples.
+This function detects zero/negative values and replaces them
+in a SummarizedExperiment object. In the first step, it checks for the presence
+of zero and negative values. Next, features with zero counts surpassing the
+threshold set by the size of smallest sample group are removed. Subsequently,
+the remaining zeros are substituted with the minimal positive values observed
+for each feature across all samples.
 }
 \examples{
 {
-###In this example, data with fixed NA values are used as an input.
-FixZeros(data=campp2_brca_1_replacedNAs,group=campp2_brca_1_meta$diagnosis, remove.sparse.features=TRUE)
+# Assuming you have a SummarizedExperiment object and relevant metadata column
+SE_fixed = FixZeros(SE = some_SE_object, group_colname = "diagnosis")
 }
 }
