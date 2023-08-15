@@ -105,26 +105,26 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
     # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     print("RUNNING MISSING VALUE IMPUTATIONS")
-    print("Running missing values imputation on data1")
+    print("Running missing values imputation on campp2_brca_se_1")
 
-    data1<-ReplaceNAs(data1)
+    campp2_brca_se_1<-ReplaceNAs(campp2_brca_se_1)
 
-    print("Missing values imputation on data1 has finished")
+    print("Missing values imputation on campp2_brca_se_1 has finished")
 
-    if (!is.null(data2)){
-        print("Running missing values imputation on data2")
+    if (!is.null(campp2_brca_se_2)){
+        print("Running missing values imputation on campp2_brca_se_2")
 
-        data2<-ReplaceNAs(data2)
+        campp2_brca_se_2<-ReplaceNAs(campp2_brca_se_2)
 
-        print("Missing values imputation on data2 has finished")
+        print("Missing values imputation on campp2_brca_se_2 has finished")
     }
 
     ###saving the results
     dir.create("ReplaceNAs")
     setwd("ReplaceNAs/")
-    save(data1,file="data1_ReplaceNAs.rda")
-    if(!is.null(data2)){
-        save(data2,file="data2_ReplaceNAs.rda")
+    save(campp2_brca_se_1,file="campp2_brca_se_1_ReplaceNAs.rda")
+    if(!is.null(campp2_brca_se_2)){
+        save(campp2_brca_se_2,file="campp2_brca_se_2_ReplaceNAs.rda")
     }
     setwd("../")
 
