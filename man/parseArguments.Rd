@@ -12,6 +12,7 @@ parseArguments(
   control.group,
   groups,
   technology,
+  sample_id_column,
   batches,
   data.check,
   standardize,
@@ -50,9 +51,11 @@ parseArguments(
 
 \item{control.group}{A string vector defining control group name (e.g., "healthy" or "normal"). In case of subtype analysis (>2 groups), the output of the main wrapper will include comparisons between control group and each subtype.}
 
-\item{groups}{Argument defining groups of samples should be specified as a character vector. The first element specifying the name of the column in the metadata file containing sample IDs and the second element specifying the name of the column which contains the groups for the DE/DA analysis.}
+\item{groups}{Character vector of length 1 (or 2 in case of 2 data sets) describing metadata column name with samples groups. Default is c("diagnosis", "diagnosis").}
 
 \item{technology}{Technology used for the analysis of biological input. Current options are 'array', 'seq', 'ms' or 'other'. This argument is mandatory and depending on which option is chosen, data is transformed differently. If a second dataset is provided, the option should be specified for each dataset, provided as a character vector.}
+
+\item{sample_id_column}{Character vector of length 1 (or 2 in case of 2 data sets) describing metadata column name with samples IDs. Default is c("IDs", "IDs").}
 
 \item{batches}{Specifies which metadata should be used for a batch correction (sequencing run/tissue/interstitial fluid/etc.). Argument takes a character vector of length 1 (one data set) or 2 (two data sets), where the string(s) match a column name(s) in the metadata file(s). In case batch correction should be performed only in 1 out of 2 data sets, a data set without the batch correction (1st one in the example) should be define as "", e.g. batches(c("","column_name")). Default is NULL.}
 

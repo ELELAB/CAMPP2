@@ -22,7 +22,7 @@ It is crucial to ensure that the row names and column names match between the fe
 If they do not match, the function will stop and throw an error.
 }
 \examples{
-rownames(campp2_brca_1_meta) <- campp2_brca_1_meta$ID
+rownames(campp2_brca_1_meta) <- campp2_brca_1_meta$IDs
 campp2_brca_se_1 <- CreateSE(campp2_brca_1, campp2_brca_1_meta)
 }
 \author{

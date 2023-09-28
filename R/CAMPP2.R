@@ -4,7 +4,8 @@
 #' @param metadata1 Samples' metadata table should be imported using function "import_metadata". Metadata must include exactly the same samples as gene counts (data1) and samples must be sorted similarly.
 #' @param metadata2 Metadata for a second dataset.
 #' @param technology Technology used for the analysis of biological input. Current options are 'array', 'seq', 'ms' or 'other'. This argument is mandatory and depending on which option is chosen, data is transformed differently. If a second dataset is provided, the option should be specified for each dataset, provided as a character vector.
-#' @param groups Argument defining groups of samples should be specified as a character vector. The first element specifying the name of the column in the metadata file containing sample IDs and the second element specifying the name of the column which contains the groups for the DEA analysis.
+#' @param sample_id_column Character vector of length 1 (or 2 in case of 2 data sets) describing metadata column name with samples IDs. Default is c("IDs", "IDs").
+#' @param groups Character vector of length 1 (or 2 in case of 2 data sets) describing metadata column name with samples groups. Default is c("diagnosis", "diagnosis").
 #' @param control.group A string vector defining control group name (e.g., "healthy" or "normal"). In case of subtype analysis (>2 groups), the output of the main wrapper will include comparisons between control group and each subtype.
 #' @param data.check Distributional checks of the input data is activated using logical argument (TRUE/FALSE). If activated, Cullen-Frey graphs will be made for 10 randomly selected variables to check data distributions. This argument is per default set to TRUE.
 #' @param kmeans Argument specifies ("TRUE" or "FALSE") if a k-means clustering should be performed. Default is FALSE (do not run).
@@ -37,13 +38,13 @@
 #' @export
 #' @return CAMPP2 results
 #' @examples {
-#' runCampp2(batches=c("tumor_stage","tumor_stage"),prefix="test_CAMPP2_distr", data1=campp2_brca_1, data2=campp2_brca_2, metadata1=campp2_brca_1_meta,metadata2=campp2_brca_2_meta, groups=c("IDs", "diagnosis","IDs", "diagnosis"), technology=c("seq","seq"), plot.PCA=TRUE, plot.DEA=TRUE, control.group = c("healthy","healthy"), plot.heatmap="DEA", data.check=TRUE,signif=c(1,0.05, 1,0.05))
+#' runCampp2(batches=c("tumor_stage","tumor_stage"),prefix="test_CAMPP2_distr", data1=campp2_brca_1, data2=campp2_brca_2, metadata1=campp2_brca_1_meta,metadata2=campp2_brca_2_meta, groups=c("diagnosis", "diagnosis"), sample_id_column= c("IDs", "IDs"), technology=c("seq","seq"), plot.PCA=TRUE, plot.DEA=TRUE, control.group = c("healthy","healthy"), plot.heatmap="DEA", data.check=TRUE,signif=c(1,0.05, 1,0.05))
 #' }
 
-runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology, groups, control.group=NULL, batches=NULL, data.check=TRUE, standardize=FALSE, transform=FALSE, plot.PCA=FALSE, plot.heatmap=FALSE, kmeans=FALSE, ensembl.version=104, plot.DEA=FALSE, heatmap.size=40, viridis.palette="turbo", num.km.clusters=NULL, signif=NULL, block=NULL, colors=NULL, prefix="Results", covariates=NULL, show.PCA.labels=FALSE, alpha.lasso=FALSE, min.coef.lasso=NULL, nfolds.lasso=NULL, num.trees.init=NULL, num.trees.iterat=NULL, split.size=NULL, test.train.ratio=NULL){
+runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology, sample_id_column, groups, control.group=NULL, batches=NULL, data.check=TRUE, standardize=FALSE, transform=FALSE, plot.PCA=FALSE, plot.heatmap=FALSE, kmeans=FALSE, ensembl.version=104, plot.DEA=FALSE, heatmap.size=40, viridis.palette="turbo", num.km.clusters=NULL, signif=NULL, block=NULL, colors=NULL, prefix="Results", covariates=NULL, show.PCA.labels=FALSE, alpha.lasso=FALSE, min.coef.lasso=NULL, nfolds.lasso=NULL, num.trees.init=NULL, num.trees.iterat=NULL, split.size=NULL, test.train.ratio=NULL){
 
     ###parse input arguments and assign updated values
-    c(data1,data2,metadata1,metadata2,technology,groups,
+    c(data1,data2,metadata1,metadata2,technology,ids1, ids2,
       group1,group2,control.group1,control.group2,ids,batches,databatch1,databatch2,
       batch1,batch2,standardize,transform,data.check,
       plot.PCA,kmeans,num.km.clusters,cutoff.logFC1,cutoff.FDR1,
@@ -52,7 +53,7 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
       DEA.allowed.type,
       show.PCA.labels,heatmap.size,viridis.palette,ensembl.version,plot.DEA,
       alpha.lasso, min.coef.lasso, nfolds.lasso, num.trees.init, num.trees.iterat, split.size, test.train.ratio) %<-% parseArguments(data1=data1, metadata1=metadata1, data2=data2, metadata2=metadata2,
-                                                technology=technology, groups=groups, control.group, batches=batches,
+                                                technology=technology, sample_id_column = sample_id_column, groups=groups, control.group, batches=batches,
                                                 data.check=data.check, standardize=standardize, transform=transform,
                                                 plot.PCA=plot.PCA, plot.heatmap=plot.heatmap, kmeans=kmeans,
                                                 signif=signif, block=block, colors=colors, prefix=prefix,
@@ -73,29 +74,20 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
 
     print("CREATING SUMMARIZED EXPERIMENT")
 
-    # Check if the column name stored in group1 exists in metadata1
-    if (group1 %in% colnames(metadata1)){
-        print("Creating Summarized Experiment object (SE) from 1st dataset.")
-        rownames(metadata1) <- metadata1[[group1]]
-        SE_1 <- CreateSE(campp2_brca_1, metadata1)
-        print("Creating SE from 1st dataset (SE_1) has finished.")
-    } else {
-        print(paste(group1, "column not found in metadata1"))
-    }
+    print("Creating SE from 1st dataset.")
+    rownames(metadata1)<-metadata1[[ids1]]
+    SE_1 <- CreateSE(data1, metadata1)
+    print("Creating SummarizedExperiment object from 1st dataset (SE_1) has finished.")
 
-    # Check if SE_2 exists and if the column name stored in group2 exists in metadata2
-    if (!is.null(SE_2) && group2 %in% colnames(metadata2)){
+    if (!is.null(data2)){
         print("Creating SE from 2nd dataset.")
-        rownames(metadata2) <- metadata2[[group2]]
-        SE_2 <- CreateSE(campp2_brca_2, metadata2)
-        print("Creating SE from 2nd dataset (SE_2) has finished.")
-    } elseif (is.null(SE_2)) {
-        # This block is not strictly necessary, but it can be helpful for debugging
-        print("SE_2 is null, skipping creation from 2nd dataset.")
-    } else {
-        print(paste(group2, "column not found in metadata2"))
-    }
 
+        rownames(metadata2)<-metadata2[[ids2]]
+        SE_2 <- CreateSE(data2, metadata2)
+
+        print("Creating SE from 2nd dataset (SE_2) has finished.")
+
+    }
 
     ###saving the results
     dir.create("SummarizedExperiment")
