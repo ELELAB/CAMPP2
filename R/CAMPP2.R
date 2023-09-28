@@ -73,20 +73,29 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
 
     print("CREATING SUMMARIZED EXPERIMENT")
 
-    print("Creating SE from 1st dataset.")
-    rownames(metadata1)<-metadata1$group1
-    SE_1 <- CreateSE(campp2_brca_1, metadata1)
-    print("Creating SE from 1st dataset has finished.")
-
-    if (!is.null(SE_2)){
-        print("Creating SE from 2nd dataset.")
-
-        rownames(metadata2)<-metadata2$group2
-        SE_2 <- CreateSE(campp2_brca_2, metadata2)
-
-        print("Creating SE from 2nd dataset has finished.")
-
+    # Check if the column name stored in group1 exists in metadata1
+    if (group1 %in% colnames(metadata1)){
+        print("Creating Summarized Experiment object (SE) from 1st dataset.")
+        rownames(metadata1) <- metadata1[[group1]]
+        SE_1 <- CreateSE(campp2_brca_1, metadata1)
+        print("Creating SE from 1st dataset (SE_1) has finished.")
+    } else {
+        print(paste(group1, "column not found in metadata1"))
     }
+
+    # Check if SE_2 exists and if the column name stored in group2 exists in metadata2
+    if (!is.null(SE_2) && group2 %in% colnames(metadata2)){
+        print("Creating SE from 2nd dataset.")
+        rownames(metadata2) <- metadata2[[group2]]
+        SE_2 <- CreateSE(campp2_brca_2, metadata2)
+        print("Creating SE from 2nd dataset (SE_2) has finished.")
+    } elseif (is.null(SE_2)) {
+        # This block is not strictly necessary, but it can be helpful for debugging
+        print("SE_2 is null, skipping creation from 2nd dataset.")
+    } else {
+        print(paste(group2, "column not found in metadata2"))
+    }
+
 
     ###saving the results
     dir.create("SummarizedExperiment")
