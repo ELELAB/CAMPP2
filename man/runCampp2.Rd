@@ -10,6 +10,7 @@ runCampp2(
   data2 = NULL,
   metadata2 = NULL,
   technology,
+  sample_id_column,
   groups,
   control.group = NULL,
   batches = NULL,
@@ -50,7 +51,9 @@ runCampp2(
 
 \item{technology}{Technology used for the analysis of biological input. Current options are 'array', 'seq', 'ms' or 'other'. This argument is mandatory and depending on which option is chosen, data is transformed differently. If a second dataset is provided, the option should be specified for each dataset, provided as a character vector.}
 
-\item{groups}{Argument defining groups of samples should be specified as a character vector. The first element specifying the name of the column in the metadata file containing sample IDs and the second element specifying the name of the column which contains the groups for the DEA analysis.}
+\item{sample_id_column}{Character vector of length 1 (or 2 in case of 2 data sets) describing metadata column name with samples IDs. Default is c("IDs", "IDs").}
+
+\item{groups}{Character vector of length 1 (or 2 in case of 2 data sets) describing metadata column name with samples groups. Default is c("diagnosis", "diagnosis").}
 
 \item{control.group}{A string vector defining control group name (e.g., "healthy" or "normal"). In case of subtype analysis (>2 groups), the output of the main wrapper will include comparisons between control group and each subtype.}
 
@@ -112,6 +115,6 @@ CAMPP2 pipeline
 }
 \examples{
 {
-runCampp2(batches=c("tumor_stage","tumor_stage"),prefix="test_CAMPP2_distr", data1=campp2_brca_1, data2=campp2_brca_2, metadata1=campp2_brca_1_meta,metadata2=campp2_brca_2_meta, groups=c("IDs", "diagnosis","IDs", "diagnosis"), technology=c("seq","seq"), plot.PCA=TRUE, plot.DEA=TRUE, control.group = c("healthy","healthy"), plot.heatmap="DEA", data.check=TRUE,signif=c(1,0.05, 1,0.05))
+runCampp2(batches=c("tumor_stage","tumor_stage"),prefix="test_CAMPP2_distr", data1=campp2_brca_1, data2=campp2_brca_2, metadata1=campp2_brca_1_meta,metadata2=campp2_brca_2_meta, groups=c("diagnosis", "diagnosis"), sample_id_column= c("IDs", "IDs"), technology=c("seq","seq"), plot.PCA=TRUE, plot.DEA=TRUE, control.group = c("healthy","healthy"), plot.heatmap="DEA", data.check=TRUE,signif=c(1,0.05, 1,0.05))
 }
 }

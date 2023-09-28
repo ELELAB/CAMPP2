@@ -5,7 +5,8 @@
 #' @param metadata1 Samples' metadata table should be imported using function "import_metadata". Metadata must include exactly the same samples as gene counts (data1) and samples must be sorted similarly.
 #' @param metadata2 Metadata for a second dataset.
 #' @param technology Technology used for the analysis of biological input. Current options are 'array', 'seq', 'ms' or 'other'. This argument is mandatory and depending on which option is chosen, data is transformed differently. If a second dataset is provided, the option should be specified for each dataset, provided as a character vector.
-#' @param groups Argument defining groups of samples should be specified as a character vector. The first element specifying the name of the column in the metadata file containing sample IDs and the second element specifying the name of the column which contains the groups for the DE/DA analysis.
+#' @param sample_id_column Character vector of length 1 (or 2 in case of 2 data sets) describing metadata column name with samples IDs. Default is c("IDs", "IDs").
+#' @param groups Character vector of length 1 (or 2 in case of 2 data sets) describing metadata column name with samples groups. Default is c("diagnosis", "diagnosis").
 #' @param control.group A string vector defining control group name (e.g., "healthy" or "normal"). In case of subtype analysis (>2 groups), the output of the main wrapper will include comparisons between control group and each subtype.
 #' @param data.check Distributional checks of the input data is activated using logical argument (TRUE/FALSE). If activated, Cullen-Frey graphs will be made for 10 randomly selected variables to check data distributions. This argument is per default set to TRUE.
 #' @param plot.heatmap Argument defining which data will be used for the selection of the top x features to be plotted on the heatmap. Options are:"DEA", "LASSO", "EN", Ridge or "Consensus".
@@ -38,7 +39,7 @@
 #' ...
 #' }
 
-parseArguments <- function(data1, data2, metadata1, metadata2, control.group, groups, technology, batches, data.check, standardize, transform, plot.PCA, plot.heatmap, plot.DEA, ensembl.version, heatmap.size, viridis.palette, kmeans, num.km.clusters, signif, colors, block, prefix, covariates, show.PCA.labels, alpha.lasso, min.coef.lasso, nfolds.lasso, num.trees.init, num.trees.iterat, split.size, test.train.ratio){
+parseArguments <- function(data1, data2, metadata1, metadata2, control.group, groups, technology, sample_id_column, batches, data.check, standardize, transform, plot.PCA, plot.heatmap, plot.DEA, ensembl.version, heatmap.size, viridis.palette, kmeans, num.km.clusters, signif, colors, block, prefix, covariates, show.PCA.labels, alpha.lasso, min.coef.lasso, nfolds.lasso, num.trees.init, num.trees.iterat, split.size, test.train.ratio){
 
 
     # For DEA analysis, survival analysis and correlation analysis
@@ -52,53 +53,41 @@ parseArguments <- function(data1, data2, metadata1, metadata2, control.group, gr
     # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    ### IDs and Groups to contrast
-    # IDs
-    ids = metadata1[ , groups[[1]]]
+    # Parse sample_id_column
+    if (length(sample_id_column) >= 1) {
+        ids1 <- sample_id_column[1]
 
-    if (length(ids) <= 1) {
-        stop(paste0("No column in metadata1 ids file called ",groups[[1]]))
-    } else {
-        metadata1$ids <- ids
-    }
-
-    # groups
-    group1 = as.factor(metadata1[ , groups[[2]]])
-
-    if (length(group1) <= 1) {
-        stop(paste0("Check the column name for groups in your metadata1 ",groups[[2]], " If the name matches, check the samples names."))
-    }
-
-
-
-    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    ### OPTIONAL ARGUMENTS ###
-    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-    group2=NULL
-    if (length(groups) == 4) {
-
-        # IDs
-        ids = metadata2[ , groups[[3]]]
-
-        if (length(ids) <= 1) {
-            stop(paste0("No column in metadata1 file called ",groups[[3]]))
-        } else {
-            metadata2$ids <- ids
+        if (!ids1 %in% colnames(metadata1) || is.null(metadata1[[ids1]]) || all(is.na(metadata1[[ids1]]))) {
+            stop(paste(ids1, "column either doesn't exist, is NULL, or has no assigned values in metadata1"))
         }
-
-
-        # Match Data and Metadata
-        metadata2 <- metadata2[metadata2$ids %in% colnames(data2),]
-
-        # groups
-        group2 = as.factor(metadata2[ , groups[[4]]])
-        if (length(group2) <= 1) {
-            stop(paste0("No column in metadata2 file called ",groups[[4]]))
-        }
-
     }
+
+    if (length(sample_id_column) == 2) {
+        ids2 <- sample_id_column[2]
+
+        if (!ids2 %in% colnames(metadata2) || is.null(metadata2[[ids2]]) || all(is.na(metadata2[[ids2]]))) {
+            stop(paste(ids2, "column either doesn't exist, is NULL, or has no assigned values in metadata2"))
+        }
+    }
+
+    # Parse groups
+    if (length(groups) >= 1) {
+        group1 <- groups[1]
+
+        if (!group1 %in% colnames(metadata1) || is.null(metadata1[[group1]]) || all(is.na(metadata1[[group1]]))) {
+            stop(paste(group1, "column either doesn't exist, is NULL, or has no assigned values in metadata1"))
+        }
+    }
+
+    if (length(groups) == 2) {
+        group2 <- groups[2]
+
+        if (!group2 %in% colnames(metadata2) || is.null(metadata2[[group2]]) || all(is.na(metadata2[[group2]]))) {
+            stop(paste(group2, "column either doesn't exist, is NULL, or has no assigned values in metadata2"))
+        }
+    }
+
+
 
 
     # control group
@@ -244,6 +233,10 @@ parseArguments <- function(data1, data2, metadata1, metadata2, control.group, gr
     cat(c("\n",
           paste0("technology: ",technology),"\n",
           paste0("groups: ",groups),"\n",
+          paste0("group1: ",group1),"\n",
+          paste0("group2: ",group2),"\n",
+          paste0("ids1: ",ids1),"\n",
+          paste0("ids2: ",ids2),"\n",
           paste0("control.group1: ", control.group1), "\n",
           paste0("control.group2: ", control.group2), "\n",
           paste0("batches: ",batches),"\n",
@@ -279,8 +272,8 @@ parseArguments <- function(data1, data2, metadata1, metadata2, control.group, gr
           paste0("test.train.ratio: ",test.train.ratio),"\n"
     ))
 
-    return(list("data1"=data1,"data2"=data2,"metadata1"=metadata1,"metadata2"=metadata2, "technology"=technology, "groups"=groups,
-                "group1"=group1,"group2"=group2, 'control.group1' = control.group1,'control.group2' = control.group2, "ids"=ids,"batches"=batches,"databatch1"=databatch1,"databatch2"=databatch2,
+    return(list("data1"=data1,"data2"=data2,"metadata1"=metadata1,"metadata2"=metadata2, "technology"=technology, "ids1" = ids1, "ids2" = ids2, "groups"=groups,
+                "group1"=group1,"group2"=group2, 'control.group1' = control.group1,'control.group2' = control.group2,"batches"=batches,"databatch1"=databatch1,"databatch2"=databatch2,
                 "batch1"=batch1, "batch2"=batch2, "standardize"=standardize,"transform"=transform,"data.check"=data.check,
                 "plot.PCA"=plot.PCA,"kmeans"=kmeans, "num.km.clusters"=num.km.clusters, "cutoff.logFC1"=cutoff.logFC1,"cutoff.FDR1"=cutoff.FDR1,
                 "cutoff.logFC2"=cutoff.logFC2,"cutoff.FDR2"=cutoff.FDR2,"block"=block,"block1"=block1,"block2"=block2,"colors"=colors,"prefix"=prefix,

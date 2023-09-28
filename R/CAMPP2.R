@@ -4,7 +4,8 @@
 #' @param metadata1 Samples' metadata table should be imported using function "import_metadata". Metadata must include exactly the same samples as gene counts (data1) and samples must be sorted similarly.
 #' @param metadata2 Metadata for a second dataset.
 #' @param technology Technology used for the analysis of biological input. Current options are 'array', 'seq', 'ms' or 'other'. This argument is mandatory and depending on which option is chosen, data is transformed differently. If a second dataset is provided, the option should be specified for each dataset, provided as a character vector.
-#' @param groups Argument defining groups of samples should be specified as a character vector. The first element specifying the name of the column in the metadata file containing sample IDs and the second element specifying the name of the column which contains the groups for the DEA analysis.
+#' @param sample_id_column Character vector of length 1 (or 2 in case of 2 data sets) describing metadata column name with samples IDs. Default is c("IDs", "IDs").
+#' @param groups Character vector of length 1 (or 2 in case of 2 data sets) describing metadata column name with samples groups. Default is c("diagnosis", "diagnosis").
 #' @param control.group A string vector defining control group name (e.g., "healthy" or "normal"). In case of subtype analysis (>2 groups), the output of the main wrapper will include comparisons between control group and each subtype.
 #' @param data.check Distributional checks of the input data is activated using logical argument (TRUE/FALSE). If activated, Cullen-Frey graphs will be made for 10 randomly selected variables to check data distributions. This argument is per default set to TRUE.
 #' @param kmeans Argument specifies ("TRUE" or "FALSE") if a k-means clustering should be performed. Default is FALSE (do not run).
@@ -37,13 +38,13 @@
 #' @export
 #' @return CAMPP2 results
 #' @examples {
-#' runCampp2(batches=c("tumor_stage","tumor_stage"),prefix="test_CAMPP2_distr", data1=campp2_brca_1, data2=campp2_brca_2, metadata1=campp2_brca_1_meta,metadata2=campp2_brca_2_meta, groups=c("IDs", "diagnosis","IDs", "diagnosis"), technology=c("seq","seq"), plot.PCA=TRUE, plot.DEA=TRUE, control.group = c("healthy","healthy"), plot.heatmap="DEA", data.check=TRUE,signif=c(1,0.05, 1,0.05))
+#' runCampp2(batches=c("tumor_stage","tumor_stage"),prefix="test_CAMPP2_distr", data1=campp2_brca_1, data2=campp2_brca_2, metadata1=campp2_brca_1_meta,metadata2=campp2_brca_2_meta, groups=c("diagnosis", "diagnosis"), sample_id_column= c("IDs", "IDs"), technology=c("seq","seq"), plot.PCA=TRUE, plot.DEA=TRUE, control.group = c("healthy","healthy"), plot.heatmap="DEA", data.check=TRUE,signif=c(1,0.05, 1,0.05))
 #' }
 
-runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology, groups, control.group=NULL, batches=NULL, data.check=TRUE, standardize=FALSE, transform=FALSE, plot.PCA=FALSE, plot.heatmap=FALSE, kmeans=FALSE, ensembl.version=104, plot.DEA=FALSE, heatmap.size=40, viridis.palette="turbo", num.km.clusters=NULL, signif=NULL, block=NULL, colors=NULL, prefix="Results", covariates=NULL, show.PCA.labels=FALSE, alpha.lasso=FALSE, min.coef.lasso=NULL, nfolds.lasso=NULL, num.trees.init=NULL, num.trees.iterat=NULL, split.size=NULL, test.train.ratio=NULL){
+runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology, sample_id_column, groups, control.group=NULL, batches=NULL, data.check=TRUE, standardize=FALSE, transform=FALSE, plot.PCA=FALSE, plot.heatmap=FALSE, kmeans=FALSE, ensembl.version=104, plot.DEA=FALSE, heatmap.size=40, viridis.palette="turbo", num.km.clusters=NULL, signif=NULL, block=NULL, colors=NULL, prefix="Results", covariates=NULL, show.PCA.labels=FALSE, alpha.lasso=FALSE, min.coef.lasso=NULL, nfolds.lasso=NULL, num.trees.init=NULL, num.trees.iterat=NULL, split.size=NULL, test.train.ratio=NULL){
 
     ###parse input arguments and assign updated values
-    c(data1,data2,metadata1,metadata2,technology,groups,
+    c(data1,data2,metadata1,metadata2,technology,ids1, ids2,
       group1,group2,control.group1,control.group2,ids,batches,databatch1,databatch2,
       batch1,batch2,standardize,transform,data.check,
       plot.PCA,kmeans,num.km.clusters,cutoff.logFC1,cutoff.FDR1,
@@ -52,7 +53,7 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
       DEA.allowed.type,
       show.PCA.labels,heatmap.size,viridis.palette,ensembl.version,plot.DEA,
       alpha.lasso, min.coef.lasso, nfolds.lasso, num.trees.init, num.trees.iterat, split.size, test.train.ratio) %<-% parseArguments(data1=data1, metadata1=metadata1, data2=data2, metadata2=metadata2,
-                                                technology=technology, groups=groups, control.group, batches=batches,
+                                                technology=technology, sample_id_column = sample_id_column, groups=groups, control.group, batches=batches,
                                                 data.check=data.check, standardize=standardize, transform=transform,
                                                 plot.PCA=plot.PCA, plot.heatmap=plot.heatmap, kmeans=kmeans,
                                                 signif=signif, block=block, colors=colors, prefix=prefix,
@@ -74,26 +75,26 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
     print("CREATING SUMMARIZED EXPERIMENT")
 
     print("Creating SE from 1st dataset.")
-    rownames(campp2_brca_1_meta)<-campp2_brca_1_meta$ID
-    campp2_brca_se_1 <- CreateSE(campp2_brca_1, campp2_brca_1_meta)
-    print("Creating SE from 1st dataset has finished.")
+    rownames(metadata1)<-metadata1[[ids1]]
+    SE_1 <- CreateSE(data1, metadata1)
+    print("Creating SummarizedExperiment object from 1st dataset (SE_1) has finished.")
 
     if (!is.null(data2)){
         print("Creating SE from 2nd dataset.")
 
-        rownames(campp2_brca_2_meta)<-campp2_brca_2_meta$ID
-        campp2_brca_se_2 <- CreateSE(campp2_brca_2, campp2_brca_2_meta)
+        rownames(metadata2)<-metadata2[[ids2]]
+        SE_2 <- CreateSE(data2, metadata2)
 
-        print("Creating SE from 2nd dataset has finished.")
+        print("Creating SE from 2nd dataset (SE_2) has finished.")
 
     }
 
     ###saving the results
     dir.create("SummarizedExperiment")
     setwd("SummarizedExperiment/")
-    save(campp2_brca_se_1,file="campp2_brca_se_1.rda")
-    if(!is.null(campp2_brca_se_2)){
-        save(campp2_brca_se_2,file="campp2_brca_se_2.rda")
+    save(SE_1,file="SE_1.rda")
+    if(!is.null(SE_2)){
+        save(SE_2,file="SE_2.rda")
     }
     setwd("../")
 
@@ -107,24 +108,24 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
     print("RUNNING MISSING VALUE IMPUTATIONS")
     print("Running missing values imputation on data1")
 
-    data1<-ReplaceNAs(data1)
+    SE_1<-ReplaceNAs(SE_1)
 
-    print("Missing values imputation on data1 has finished")
+    print("Missing values imputation on SE_1 has finished")
 
-    if (!is.null(data2)){
-        print("Running missing values imputation on data2")
+    if (!is.null(SE_2)){
+        print("Running missing values imputation on SE_2")
 
-        data2<-ReplaceNAs(data2)
+        SE_2<-ReplaceNAs(SE_2)
 
-        print("Missing values imputation on data2 has finished")
+        print("Missing values imputation on SE_2 has finished")
     }
 
     ###saving the results
     dir.create("ReplaceNAs")
     setwd("ReplaceNAs/")
-    save(data1,file="data1_ReplaceNAs.rda")
-    if(!is.null(data2)){
-        save(data2,file="data2_ReplaceNAs.rda")
+    save(SE_1,file="SE_1_ReplaceNAs.rda")
+    if(!is.null(SE_2)){
+        save(SE_2,file="SE_2_ReplaceNAs.rda")
     }
     setwd("../")
 
@@ -136,24 +137,24 @@ runCampp2 <- function (data1, metadata1, data2=NULL, metadata2=NULL, technology,
 
     print("CAMPP2 automatically detects negative values and fix zeros in your data")
     print("RUNNING DETECTION OF NEGATIVE VALUES AND FIXING OF ZERO VALUES")
-    print("Detecting negative values and fixing zeros in data1")
+    print("Detecting negative values and fixing zeros in SE_1")
 
-    data1.original <- data1
-    data1 %<-% FixZeros(data1,group1)
+    SE_1.original <- SE_1
+    SE_1 %<-% FixZeros(SE_1,group1)
 
-    data2.original=NULL
-    if (!is.null(data2)){
-        data2.original <- data2
-        print("Detecting negative values and replacing zeros in data2")
-        data2 %<-% FixZeros(data2,group2)
+    SE_2.original=NULL
+    if (!is.null(SE_2)){
+        SE_2.original <- SE_2
+        print("Detecting negative values and replacing zeros in SE_2")
+        SE_2 %<-% FixZeros(SE_2,group2)
     }
 
     ###saving the results
     dir.create("FixZeros")
     setwd("FixZeros/")
-    save(data1,file="data1_FixZeros.rda")
-    if(!is.null(data2)){
-        save(data2,file="data2_FixZeros.rda")
+    save(SE_1,file="SE_1_FixZeros.rda")
+    if(!is.null(SE_2)){
+        save(SE_2,file="SE_2_FixZeros.rda")
     }
     setwd("../")
 

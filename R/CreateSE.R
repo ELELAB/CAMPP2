@@ -9,7 +9,7 @@
 #' and each column represents a metadata category. Row names must match the column names in feature counts
 #' @return A SummarizedExperiment object containing the given feature_counts and sample_metadata.
 #' @examples
-#' rownames(campp2_brca_1_meta) <- campp2_brca_1_meta$ID
+#' rownames(campp2_brca_1_meta) <- campp2_brca_1_meta$IDs
 #' campp2_brca_se_1 <- CreateSE(campp2_brca_1, campp2_brca_1_meta)
 #' @export
 #' @importFrom SummarizedExperiment SummarizedExperiment
